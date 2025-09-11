@@ -92,7 +92,28 @@ int main(void)
   /* USER CODE BEGIN 2 */
   // User Private Functions
 
-  // De-bounce Function
+
+  /*
+   * Function Prototype 					bool Debounce(int times);
+   *
+   * Description:							This function will poll the hard coded pin (C13) which the button is connected to on the MCU.
+   * 											If the button is on then the function will continue running until it has run "times" in
+   * 											integer input variable to fine tune the amount of times the button is polled before
+   * 											returning a true boolean if it is still on. If on any of these cycles the button comes
+   * 											back off or disconnected the function will exit with false representing the button is not
+   * 											pressed. Hard coded time to wait between presses is 20ms.
+   *
+   * Inputs:								int times : integer representing how many times the for loop runs to debounce the button.
+   *
+   * Outputs:								bool : true and false representing the button is on and the button is off respectively.
+   *
+   * Side Effects:							Function holds processor with waiting timer until the function has polled the button "times"
+   *
+   * Example Usage:							if (Debounce(4))		// Check for user input on C13
+   *										{
+   *										   HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+   *									    }
+  */
   bool Debounce(int times)
   {
 	  // Local Variables
@@ -100,25 +121,25 @@ int main(void)
 	  uint32_t current_time = 0;
 	  uint32_t next_check = 0;
 
-	  // Main Function
-	  for (int i = 0; i < times; i++)												// Run for the amount of times to wait
+	  // Main Function Loop
+	  for (int i = 0; i < times; i++)							// Run for the amount of times to wait
 	  {
-		  check = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);				// Poll the button
-		  next_check = HAL_GetTick() + 20;										// Set timer for 20ms
+		  check = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);			// Poll the button
+		  next_check = HAL_GetTick() + 20;						// Set timer for 20ms
 
-		  if (!check)																					// Check if the button is off
+		  // If button is off exit function and return a false value.
+		  if (!check)											// Check if the button is off
 		  {
 			  return false;
 		  }
-		  while (current_time < next_check)										// Wait for next check
+		  while (current_time < next_check)						// Wait for next check
 		  {
-			  current_time = HAL_GetTick();											// Update time check
+			  current_time = HAL_GetTick();						// Update time check
 		  }
 	  }
 
 	  // Tell the user this is a validated press
 	  return true;
-
   }
 
 
@@ -153,6 +174,9 @@ int main(void)
 	  {
 		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
 	  }
+
+	  //HAL_Delay(1000); 							// Delay time in ms
+	  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);	// Toggle Pin on and off
 
 
     /* USER CODE END WHILE */

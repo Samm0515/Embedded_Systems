@@ -1,0 +1,16 @@
+!SESSION 2025-09-10 17:31:01.354 -----------------------------------------------
+eclipse.buildId=Version 1.13.1
+java.version=17.0.6
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -keyring /Users/samuel.meysembourg/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -keyring /Users/samuel.meysembourg/.eclipse_keyring
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-09-10 17:31:07.977
+!MESSAGE Log4j2 initialized with config file /Users/samuel.meysembourg/Embedded_Systems/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-09-10 17:31:12.936
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-09-10 17:31:47.569
+!MESSAGE Indexed 'Lab_1_Blink' (27 sources, 123 headers) in 6.48 sec: 12,919 declarations; 67,228 references; 3 unresolved inclusions; 74 syntax errors; 178 unresolved names (0.22%)
