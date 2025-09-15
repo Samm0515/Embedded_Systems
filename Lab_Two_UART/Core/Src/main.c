@@ -22,16 +22,22 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct
+{
+	GPIO_TypeDef *port;
+	uint16_t pin;
+}DEFINE_GPIO;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define DOT_LENGTH 200
+#define DASH_LENGTH 1000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,6 +66,8 @@ uint8_t rx_data[2];
 uint8_t rx_buffer[100];
 uint8_t transfer_cplt;
 
+// Pin Definitions
+DEFINE_GPIO LED_ONE = {GPIOC, GPIO_PIN_7};
 
 /* USER CODE END PV */
 
@@ -74,11 +82,246 @@ static void MX_UCPD1_Init(void);
 static void MX_USB_PCD_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+bool dot(GPIO_TypeDef *port, uint16_t pin);
+bool dash(GPIO_TypeDef *port, uint16_t pin);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// Functions
+int ConvertToMorseCode(char character)
+{
+	// Test the input
+	switch (character)
+	{
+
+	case 'A':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 1;
+
+	case 'B':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 2;
+
+	case 'C':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 3;
+
+	case 'D':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 4;
+
+	case 'E':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 5;
+
+	case 'F':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 6;
+
+	case 'G':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 7;
+
+	case 'H':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 8;
+
+	case 'I':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 9;
+
+	case 'J':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 10;
+
+	case 'K':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 11;
+
+	case 'L':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 12;
+
+	case 'M':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 13;
+
+	case 'N':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 14;
+
+	case 'O':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 15;
+
+	case 'P':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 16;
+
+	case 'Q':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 17;
+
+	case 'R':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 18;
+
+	case 'S':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 19;
+
+	case 'T':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 20;
+
+	case 'U':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 21;
+
+	case 'V':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 22;
+
+	case 'W':
+		// Morse
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 23;
+
+	case 'X':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 24;
+
+	case 'Y':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		return 25;
+
+	case 'Z':
+		// Morse
+		dash(LED_ONE.port, LED_ONE.pin);
+		dash(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		dot(LED_ONE.port, LED_ONE.pin);
+		return 26;
+
+	default:
+		// Report Error
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
+		HAL_Delay(DASH_LENGTH);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+		return -1;
+	}
+}
+
+
+
+bool dot(GPIO_TypeDef *PORT, uint16_t PIN)
+{
+	// Turn on LED
+	HAL_GPIO_WritePin(PORT, PIN, GPIO_PIN_SET);
+	// Delay for dot
+	HAL_Delay(DOT_LENGTH);
+	// Turn LED off
+	HAL_GPIO_WritePin(PORT, PIN, GPIO_PIN_RESET);
+	// Delay Normal Time period
+	HAL_Delay(DOT_LENGTH);
+	// Return True to indicate success
+	return true;
+}
+
+
+
+bool dash(GPIO_TypeDef *port, uint16_t pin)
+{
+	// Turn on LED
+	HAL_GPIO_WritePin(LED_ONE.port, LED_ONE.pin, GPIO_PIN_SET);
+	// Delay for dot
+	HAL_Delay(DASH_LENGTH);
+	// Turn LED off
+	HAL_GPIO_WritePin(LED_ONE.port, LED_ONE.pin, GPIO_PIN_RESET);
+	// Delay Normal Time period
+	HAL_Delay(DOT_LENGTH);
+	// Return True to indicate success
+	return true;
+}
 
 /* USER CODE END 0 */
 
@@ -133,8 +376,8 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 	  // Test 01
-	  HAL_UART_Transmit(&hlpuart1, tx_buffer, 27, 10);
-	  HAL_Delay(1000);
+	  //HAL_UART_Transmit(&huart3, tx_buffer, sizeof(tx_buffer), 10);
+	  //HAL_Delay(1000);
 
 	  // Test 02
 
@@ -315,7 +558,7 @@ static void MX_LPUART1_UART_Init(void)
 
   /* USER CODE END LPUART1_Init 1 */
   hlpuart1.Instance = LPUART1;
-  hlpuart1.Init.BaudRate = 209700;
+  hlpuart1.Init.BaudRate = 115200;
   hlpuart1.Init.WordLength = UART_WORDLENGTH_8B;
   hlpuart1.Init.StopBits = UART_STOPBITS_1;
   hlpuart1.Init.Parity = UART_PARITY_NONE;
@@ -584,11 +827,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
 
-	/* NOTE : This function should not be modified, when the callback is needed,
-	the HAL_UART_RxCpltCallback can be implemented in the user file.
-	*/
-	//HAL_UART_Transmit(&hlpuart1, rx_data, 6, 10);
-
 	uint8_t i;
 	if(huart->Instance == USART3)									// Check if interrupt came from USART 3 and not any of the other uart multiplexed with this port
 	{
@@ -613,12 +851,29 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		transfer_cplt = 1;											// Set transfer complete flag to high
 		//HAL_UART_Transmit(&hlpuart1, "\n\r", 2, 100);
 		HAL_UART_Transmit(&huart3, "\n\r", 2, 100);					// Send new line and carriage return to serial monitor
+
+
+		for (int i = 0; i <= rx_index; i++)
+		{
+			char character = (char)rx_data[1];
+			ConvertToMorseCode(character);
+
+		}
+
+
+
+
+
+
+
+		/*
 		if(!strcmp(rx_buffer, "LED ON"))							// If data in buffer is the string "LED ON" turn the led on
 		{
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 1);				// Turn on LED to indicate "LED ON" works
 		}
-	}
+		*/
 
+	}
 	HAL_UART_Receive_IT(&huart3, rx_data, 1);						// Initilize uart interrupt again
 	HAL_UART_Transmit(&huart3, rx_data, strlen(rx_data), 100);		// Echo back usrt recived data
 	}

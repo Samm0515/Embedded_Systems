@@ -29,9 +29,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  12 .comment      00000043  00000000  00000000  0002006a  2**0
                   CONTENTS, READONLY
- 13 .debug_info   0000c82b  00000000  00000000  000200ad  2**0
+ 13 .debug_info   0000c82c  00000000  00000000  000200ad  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00001d0a  00000000  00000000  0002c8d8  2**0
+ 14 .debug_abbrev 00001d0a  00000000  00000000  0002c8d9  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_aranges 00000a80  00000000  00000000  0002e5e8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_macro  00027f51  00000000  00000000  0002f86b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0000c70d  00000000  00000000  000577bc  2**0
+ 18 .debug_line   0000c715  00000000  00000000  000577bc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000fe188  00000000  00000000  00063ec9  2**0
+ 19 .debug_str    000fe188  00000000  00000000  00063ed1  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  00002a64  00000000  00000000  00162054  2**2
+ 20 .debug_frame  00002a64  00000000  00000000  0016205c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000062  00000000  00000000  00164ab8  2**0
+ 21 .debug_line_str 00000062  00000000  00000000  00164ac0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -368,10 +368,10 @@ Disassembly of section .text:
  8000552:	bf00      	nop
 
 08000554 <Debounce.0>:
-  /* USER CODE BEGIN 2 */
-  // User Private Functions
-
-  // De-bounce Function
+   *										{
+   *										   HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+   *									    }
+  */
   bool Debounce(int times)
   {
  8000554:	b580      	push	{r7, lr}
@@ -390,13 +390,11 @@ Disassembly of section .text:
  8000568:	2300      	movs	r3, #0
  800056a:	60bb      	str	r3, [r7, #8]
 
-	  // Main Function
-	  for (int i = 0;
+	  // Main Function Loop
+	  for (int i = 0; i < times; i++)							// Run for the amount of times to wait
  800056c:	2300      	movs	r3, #0
  800056e:	613b      	str	r3, [r7, #16]
  8000570:	e01a      	b.n	80005a8 <Debounce.0+0x54>
-	  			i < times;
-	  			i++)							// Run for the amount of times to wait
 	  {
 		  check = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);			// Poll the button
  8000572:	f44f 5100 	mov.w	r1, #8192	; 0x2000
@@ -410,6 +408,7 @@ Disassembly of section .text:
  8000586:	3314      	adds	r3, #20
  8000588:	60bb      	str	r3, [r7, #8]
 
+		  // If button is off exit function and return a false value.
 		  if (!check)											// Check if the button is off
  800058a:	68fb      	ldr	r3, [r7, #12]
  800058c:	2b00      	cmp	r3, #0
@@ -429,11 +428,10 @@ Disassembly of section .text:
  800059c:	68bb      	ldr	r3, [r7, #8]
  800059e:	429a      	cmp	r2, r3
  80005a0:	d3f8      	bcc.n	8000594 <Debounce.0+0x40>
-	  			i++)							// Run for the amount of times to wait
+	  for (int i = 0; i < times; i++)							// Run for the amount of times to wait
  80005a2:	693b      	ldr	r3, [r7, #16]
  80005a4:	3301      	adds	r3, #1
  80005a6:	613b      	str	r3, [r7, #16]
-	  			i < times;
  80005a8:	693a      	ldr	r2, [r7, #16]
  80005aa:	687b      	ldr	r3, [r7, #4]
  80005ac:	429a      	cmp	r2, r3
@@ -444,7 +442,6 @@ Disassembly of section .text:
 	  // Tell the user this is a validated press
 	  return true;
  80005b0:	2301      	movs	r3, #1
-
   }
  80005b2:	4618      	mov	r0, r3
  80005b4:	3718      	adds	r7, #24
