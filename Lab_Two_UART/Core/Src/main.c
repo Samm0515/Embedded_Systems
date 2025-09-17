@@ -1,4 +1,6 @@
 /* USER CODE BEGIN Header */
+// By Samuel Meysembourg
+// EE340 Fall 2025
 /**
   ******************************************************************************
   * @file           : main.c
