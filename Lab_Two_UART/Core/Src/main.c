@@ -90,6 +90,36 @@ uint8_t test = 1;		// 0 = test 01, 1 = test 02
 DEFINE_GPIO GREEN_LED = {GPIOC, GPIO_PIN_7};
 DEFINE_GPIO RED_LED = {GPIOA, GPIO_PIN_9};
 
+// Morse Code Lookup Table
+int lookup_table[26][5] = 	{
+							{65,1,2,0,0},     // A		// ASCII character in decimal then 1 = dot, 2 = dash.
+							{66,2,1,1,1},     // B
+							{67,2,1,2,1},     // C
+							{68,2,1,1,0},     // D
+							{69,1,0,0,0},     // E
+							{70,1,1,2,1},     // F
+							{71,2,2,1,0},     // G
+							{72,1,1,1,1},     // H
+							{73,1,1,0,0},     // I
+							{74,1,2,2,2},     // J
+							{75,2,1,2,0},     // K
+							{76,1,2,1,1},     // L
+							{77,2,2,0,0},     // M
+							{78,2,1,0,0},     // N
+							{79,2,2,2,0},     // O
+							{80,1,2,2,1},     // P
+							{81,2,2,1,2},     // Q
+							{82,1,2,1,0},     // R
+							{83,1,1,1,0},     // S
+							{84,2,0,0,0},     // T
+							{85,1,1,2,0},     // U
+							{86,1,1,1,2},     // V
+							{87,1,2,2,0},     // W
+							{88,2,1,1,2},     // X
+							{89,2,1,2,2},     // Y
+							{90,2,2,1,1}      // Z
+							};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,6 +135,7 @@ static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 // Function Prototypes
+bool Display_Character(char input_char);
 bool dot(GPIO_TypeDef *port, uint16_t pin);
 bool dash(GPIO_TypeDef *port, uint16_t pin);
 
@@ -116,221 +147,72 @@ bool dash(GPIO_TypeDef *port, uint16_t pin);
 // Functions
 
 /*
- * Function Prototype 					int ConvertToMorseCode(char character);
+ * Function Prototype 					bool Display_Character(char input_char);
  *
- * Description:							This function will parse out the input character into the corresponding morse code sequence.
+ * Description:							This function will parse out the input character into the corresponding morse code sequence by
+ * 											looking for the coresponding ASCII code in the lookup table.
  *
  * Inputs:								char character : character representing character typed by user. Domain A - Z (capitol).
  *
- * Outputs:								int : 1-26 representing the character that was the input. -1 if the function did not find a match.
+ * Outputs:								bool : True representing character was found and displayed. False representing that the
+ * 											character was not found in the lookup table.
  *
  * Side Effects:						Function holds processor with waiting timer until the function successfully displayed the
  * 											led sequence associated with the character input.
  *
  * Example Usage:						for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
  *										{
- *											ConvertToMorseCode((char)display_buffer[i]);	// Need to cast uint8_t to char
+ *											if (!Display_Character((char)display_buffer[i]))
+ *											{
+ *												HAL_UART_Transmit(&huart1, "Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
+ *											}
  *										}
 */
-int ConvertToMorseCode(char character)
+bool Display_Character(char input_char)
 {
-	// Test the input
-	switch (character)
-	{
+	// Display morse code
+	    int row_match = 0;
+	    int col_match = 0;
+	    bool match_found = false;
 
-	case 'A':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 1;
-
-	case 'B':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 2;
-
-	case 'C':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 3;
-
-	case 'D':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 4;
-
-	case 'E':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 5;
-
-	case 'F':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 6;
-
-	case 'G':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 7;
-
-	case 'H':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 8;
-
-	case 'I':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 9;
-
-	case 'J':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 10;
-
-	case 'K':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 11;
-
-	case 'L':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 12;
-
-	case 'M':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 13;
-
-	case 'N':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 14;
-
-	case 'O':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 15;
-
-	case 'P':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 16;
-
-	case 'Q':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 17;
-
-	case 'R':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 18;
-
-	case 'S':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 19;
-
-	case 'T':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 20;
-
-	case 'U':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 21;
-
-	case 'V':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 22;
-
-	case 'W':
-		// Morse
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 23;
-
-	case 'X':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 24;
-
-	case 'Y':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		return 25;
-
-	case 'Z':
-		// Morse
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dash(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		dot(GREEN_LED.port, GREEN_LED.pin);
-		return 26;
-
-	default:
-		// Report Error
-		HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, GPIO_PIN_SET);
-		HAL_Delay(DASH_LENGTH);
-		HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, GPIO_PIN_RESET);
-		return -1;
-	}
+	    for (int i = 0; i < 26; i++)                    // For each row
+	    {
+	        for (int j = 0; j < 5; j++)                 // For each position in each row
+	        {
+	            // Look for match in the table
+	            if (lookup_table[i][j] == input_char)
+	            {
+	                row_match = i;
+	                col_match = j;
+	                match_found = true;
+	                break;
+	            }
+	        }
+	        if (match_found)
+	        break;
+	    }
+	    if (match_found)
+	    {
+	        for (int i = 1; i < 5; i++)
+	        {
+	            int value = lookup_table[row_match][i];
+	            if (value == 1)
+	            {
+	            	dot(GREEN_LED.port, GREEN_LED.pin);		// Display a dot
+	            }
+	            if (value == 2)
+	            {
+	            	dash(GREEN_LED.port, GREEN_LED.pin);	// Display a dash
+	            }
+	        }
+	        // Character found and displayed
+	        return true;
+	    }
+	    // No match found
+	    else
+	    {
+	    	return false;
+	    }
 }
 
 
@@ -459,7 +341,10 @@ int main(void)
 		  HAL_UART_AbortReceive_IT(&huart3);					// Disable RX interrupt while displaying morse code conversions
 		  for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
 			{
-				ConvertToMorseCode((char)display_buffer[i]);	// Need to cast uint8_t to char
+				if (!Display_Character((char)display_buffer[i]))
+				{
+					HAL_UART_Transmit(&huart1, "Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
+				}
 			}
 
 

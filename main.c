@@ -1,49 +1,73 @@
 #include <stdio.h>
+#include <stdbool.h>
 
-int lookup_table[26][4] =  {{1,2,0,0},      // 1 = Dot
-                            {0,0,0,0},      // 2 = Dash
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0},
-                            {0,0,0,0}
-                           };
+int lookup_table[26][5] =   {
+                            {65,1,2,0,0},     // A: · –
+                            {66,2,1,1,1},     // B: – · · ·
+                            {67,2,1,2,1},     // C: – · – ·
+                            {68,2,1,1,0},     // D: – · ·
+                            {69,1,0,0,0},     // E: ·
+                            {70,1,1,2,1},     // F: · · – ·
+                            {71,2,2,1,0},     // G: – – ·
+                            {72,1,1,1,1},     // H: · · · ·
+                            {73,1,1,0,0},     // I: · ·
+                            {74,1,2,2,2},     // J: · – – –
+                            {75,2,1,2,0},     // K: – · –
+                            {76,1,2,1,1},     // L: · – · ·
+                            {77,2,2,0,0},     // M: – –
+                            {78,2,1,0,0},     // N: – ·
+                            {79,2,2,2,0},     // O: – – –
+                            {80,1,2,2,1},     // P: · – – ·
+                            {81,2,2,1,2},     // Q: – – · –
+                            {82,1,2,1,0},     // R: · – ·
+                            {83,1,1,1,0},     // S: · · ·
+                            {84,2,0,0,0},     // T: –
+                            {85,1,1,2,0},     // U: · · –
+                            {86,1,1,1,2},     // V: · · · –
+                            {87,1,2,2,0},     // W: · – –
+                            {88,2,1,1,2},     // X: – · · –
+                            {89,2,1,2,2},     // Y: – · – –
+                            {90,2,2,1,1}      // Z: – – · ·
+                            };
 
 
 int main (void)
 {
     // Display morse code
-    int input_char = 0;
+    char input_char = 'Z';
+    int row_match = 0;
+    int col_match = 0;
+    bool match_found = false;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 26; i++)                    // For each row
     {
-        int value = lookup_table[input_char][i];
-        if (value == 1)
+        for (int j = 0; j < 5; j++)                 // For each position in each row
         {
-            printf("Dot\n");
+            // Look for match in the table
+            if (lookup_table[i][j] == input_char)
+            {
+                row_match = i;
+                col_match = j;
+                match_found = true;
+                break;
+            }
         }
-        if (value == 2)
+        if (match_found)
+        break;
+    }
+    if (match_found)
+    {
+        for (int i = 1; i < 5; i++)
         {
-            printf("Dash");
+            int value = lookup_table[row_match][i];
+            if (value == 1)
+            {
+                printf("Dot\n");
+            }
+            if (value == 2)
+            {
+                printf("Dash\n");
+            }
         }
     }
 }
