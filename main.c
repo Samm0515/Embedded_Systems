@@ -34,26 +34,21 @@ int lookup_table[26][5] =   {
 int main (void)
 {
     // Display morse code
-    char input_char = 'Z';
+    char input_char = 'S';
     int row_match = 0;
     int col_match = 0;
     bool match_found = false;
 
     for (int i = 0; i < 26; i++)                    // For each row
     {
-        for (int j = 0; j < 5; j++)                 // For each position in each row
+        // Look for match in the table
+        if (lookup_table[i][0] == input_char)
         {
-            // Look for match in the table
-            if (lookup_table[i][j] == input_char)
-            {
-                row_match = i;
-                col_match = j;
-                match_found = true;
-                break;
-            }
+            row_match = i;
+            match_found = true;
+            break;
         }
-        if (match_found)
-        break;
+
     }
     if (match_found)
     {
