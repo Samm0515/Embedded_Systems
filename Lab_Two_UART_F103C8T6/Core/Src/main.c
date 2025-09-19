@@ -355,18 +355,13 @@ bool Display_Character(char input_char)
 
 	    for (int i = 0; i < 26; i++)                    // For each row
 	    {
-	        for (int j = 0; j < 5; j++)                 // For each position in each row
-	        {
-	            // Look for match in the table
-	            if (lookup_table[i][j] == input_char)
-	            {
-	                row_match = i;
-	                match_found = true;
-	                break;
-	            }
-	        }
-	        if (match_found)
-	        break;
+			// Look for match in the table
+			if (lookup_table[i][0] == input_char)
+			{
+				row_match = i;
+				match_found = true;
+				break;
+			}
 	    }
 	    if (match_found)
 	    {
