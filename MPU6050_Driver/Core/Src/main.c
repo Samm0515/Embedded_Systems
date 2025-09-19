@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "mpu6050.h"
 
 /* USER CODE END Includes */
 
@@ -94,12 +95,18 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  MPU6050_Data* device = MPU6050_INIT(&hi2c1, &huart1);
+
+  MPU6050_ConfigureDevice (device, &hi2c1, &huart1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  MPU6050_Update_Values(device, &hi2c1, &huart1);
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
