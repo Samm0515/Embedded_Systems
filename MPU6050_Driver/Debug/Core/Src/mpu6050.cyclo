@@ -1,3 +1,0 @@
-../Core/Src/mpu6050.c:52:15:MPU6050_INIT	3
-../Core/Src/mpu6050.c:116:6:MPU6050_ConfigureDevice	4
-../Core/Src/mpu6050.c:184:6:MPU6050_Update_Values	1
