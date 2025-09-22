@@ -44,6 +44,9 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define LAB_TEST 0
+
+
 #define DOT_LENGTH 200
 #define DASH_LENGTH 1000
 #define INTERMEDIATE_LENGTH 200
@@ -75,12 +78,12 @@ uint8_t tx_buffer[27] = "Welcome to EE340\n\r";
 
 // Test 02
 uint8_t rx_index;
-uint8_t rx_data[2];
-uint8_t rx_buffer[100];
+char rx_data[2];
+char rx_buffer[100];
 uint8_t transfer_cplt;
 
 bool running = false;
-uint8_t display_buffer[100];
+char display_buffer[100];
 uint8_t display_index = 0;
 
 // Test select
@@ -172,7 +175,6 @@ bool Display_Character(char input_char)
 {
 	// Display morse code
 	    int row_match = 0;
-	    int col_match = 0;
 	    bool match_found = false;
 
 	    for (int i = 0; i < 26; i++)                    // For each row
@@ -309,7 +311,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Test 02
-  HAL_UART_Receive_IT(&huart3, rx_data, 1);		// Start initial UART RX interrupt
+  HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);		// Start initial UART RX interrupt
   HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_OFF);
 
   /* USER CODE END 2 */
@@ -323,34 +325,42 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 	  // Test 00
-	  //HAL_UART_Transmit(&huart3, tx_buffer, sizeof(tx_buffer), 10);
-	  //HAL_Delay(1000);
-
+	  if (LAB_TEST == 0)
+	  {
+	  HAL_UART_Transmit(&huart3, tx_buffer, sizeof(tx_buffer), 10);
+	  HAL_Delay(1000);
+	  }
 	  // Test 01
+	  if (LAB_TEST == 1)
+	  {
 	  // NONE
+	  }
 
 	  // Test 02
-	  if (test && running)		// If Display flag is set
+	  if (LAB_TEST == 2)
 	  {
-		  HAL_UART_AbortReceive_IT(&huart3);					// Disable RX interrupt while displaying morse code conversions
-		  for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
-			{
-				if (!Display_Character((char)display_buffer[i]))
+		  if (test && running)		// If Display flag is set
+		  {
+			  HAL_UART_AbortReceive_IT(&huart3);					// Disable RX interrupt while displaying morse code conversions
+			  for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
 				{
-					HAL_UART_Transmit(&huart1, "Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
+					if (!Display_Character((char)display_buffer[i]))
+					{
+						HAL_UART_Transmit(&huart3, (uint8_t*)"Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
+					}
 				}
-			}
 
 
-		  // Reset display buffers and index
-		  for(int i = 0; i < 100; i++)
-			{
-			  display_buffer[i] = 0;
-			}
-		  display_index = 0;
-		  running = false;
-		  // Restart UART interrupt to start receiving data again
-		  HAL_UART_Receive_IT(&huart3, rx_data, 1);
+			  // Reset display buffers and index
+			  for(int i = 0; i < 100; i++)
+				{
+				  display_buffer[i] = 0;
+				}
+			  display_index = 0;
+			  running = false;
+			  // Restart UART interrupt to start receiving data again
+			  HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);
+		  }
 	  }
   }
 
@@ -812,62 +822,108 @@ static void MX_GPIO_Init(void)
 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(huart);
-
-	uint8_t i;
-	if((huart->Instance == USART3) && !running)									// Check if interrupt came from USART 3 and not any of the other UART multiplexed with this port
+	if (LAB_TEST == 0)
 	{
-		if(rx_index == 0)														// If the position in the buffer is 0 then reset the whole buffer
-		{
-			for(i = 0; i < 100; i++)
-			{
-				rx_buffer[i] = 0;
-			}
-
-			HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_OFF);			// Turn off the LED to indicate the buffer has been cleared
+		return;
 	}
 
-	if(rx_data[0] != 13)														// If incoming data is not the carriage return save data to buffer
+	if (LAB_TEST == 1)
 	{
-		rx_buffer[rx_index++] = rx_data[0];										// Add data to rx_buffer if not carriage return
+		/* Prevent unused argument(s) compilation warning */
+		  UNUSED(huart);
+
+		  /* NOTE : This function should not be modified, when the callback is needed,
+		            the HAL_UART_RxCpltCallback can be implemented in the user file.
+		   */
+		  //HAL_UART_Transmit(&hlpuart1, rx_data, 6, 10);
+		  uint8_t i;
+		  	  if(huart->Instance == USART3)
+		  	  {
+		  		  if(rx_index == 0){
+		  			 for(i = 0; i < 100; i++){
+		  				 rx_buffer[i] = 0;
+		  			 }
+		  			 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
+		  		  }
+
+		  		  if(rx_data[0] != 13){
+		  			  rx_buffer[rx_index++] = rx_data[0];
+		  		  }
+		  		  else{
+		  			  rx_index = 0;
+		  			  transfer_cplt = 1;
+		  			  //HAL_UART_Transmit(&hlpuart1, "\n\r", 2, 100);
+		  			  HAL_UART_Transmit(&huart3, (uint8_t*)"\n\r", 2, 100);
+		  			  if(!strcmp(rx_buffer, "LED ON"))
+		  			  {
+		  				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 1);
+		  			  }
+		  		  }
+		  		  HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);
+		  		  HAL_UART_Transmit(&huart3, (uint8_t*)rx_data, strlen(rx_data), 100);
+		  	  }
+
 	}
 
-	else																		// If incoming data is the carriage return do this...
+	if (LAB_TEST == 2)
 	{
-		transfer_cplt = 1;														// Set transfer complete flag to high
-		HAL_UART_Transmit(&huart3, (uint8_t *)"\n\r", 2, 100);								// Send new line and carriage return to serial monitor
-		// Start Display
+		/* Prevent unused argument(s) compilation warning */
+		UNUSED(huart);
 
-		// Test 02
-		if (test)
+		uint8_t i;
+		if((huart->Instance == USART3) && !running)									// Check if interrupt came from USART 3 and not any of the other UART multiplexed with this port
 		{
-			running = true;
-			// Copy buffer display index
-			display_index = rx_index;
-			for(i = 0; i < 100; i++)												// Transfer the rx_buffer into a new display buffer
+			if(rx_index == 0)														// If the position in the buffer is 0 then reset the whole buffer
 			{
-				display_buffer[i] = rx_buffer[i];
-			}
+				for(i = 0; i < 100; i++)
+				{
+					rx_buffer[i] = 0;
+				}
+
+				HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_OFF);			// Turn off the LED to indicate the buffer has been cleared
 		}
-		rx_index = 0;															// Reset index to 0
 
-
-		if (test)
+		if(rx_data[0] != 13)														// If incoming data is not the carriage return save data to buffer
 		{
-			// Test 01
-			if(!strcmp((char *)rx_buffer, "LED ON"))										// If data in buffer is the string "LED ON" turn the led on
-			{
-				HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_ON);			// Turn on LED to indicate "LED ON" works
-			}
+			rx_buffer[rx_index++] = rx_data[0];										// Add data to rx_buffer if not carriage return
 		}
 
+		else																		// If incoming data is the carriage return do this...
+		{
+			transfer_cplt = 1;														// Set transfer complete flag to high
+			HAL_UART_Transmit(&huart3, (uint8_t *)"\n\r", 2, 100);								// Send new line and carriage return to serial monitor
+			// Start Display
+
+			// Test 02
+			if (test)
+			{
+				running = true;
+				// Copy buffer display index
+				display_index = rx_index;
+				for(i = 0; i < 100; i++)												// Transfer the rx_buffer into a new display buffer
+				{
+					display_buffer[i] = rx_buffer[i];
+				}
+			}
+			rx_index = 0;															// Reset index to 0
+
+
+			if (test)
+			{
+				// Test 01
+				if(!strcmp((char *)rx_buffer, "LED ON"))										// If data in buffer is the string "LED ON" turn the led on
+				{
+					HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_ON);			// Turn on LED to indicate "LED ON" works
+				}
+			}
 
 
 
-	}
-	HAL_UART_Receive_IT(&huart3, rx_data, 1);									// Initialize UART interrupt again
-	HAL_UART_Transmit(&huart3, rx_data, 1, 100);								// Echo back UART received data
+
+		}
+		HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);									// Initialize UART interrupt again
+		HAL_UART_Transmit(&huart3, (uint8_t*)rx_data, 1, 100);								// Echo back UART received data
+		}
 	}
 }
 
