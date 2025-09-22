@@ -20,7 +20,7 @@
 #include "main.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,7 +35,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define LAB_TEST 1			// LAB_TEST is the macro that controls what part of the lab is run for easy switching 1 = part1, 2 = part2
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -55,10 +55,13 @@ static void MX_GPIO_Init(void);
 static void MX_ICACHE_Init(void);
 /* USER CODE BEGIN PFP */
 
+uint8_t VerifyButtonPress(GPIO_TypeDef* PORT, uint16_t PIN, uint8_t positive_polls, uint8_t total_polls);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -95,58 +98,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   // User Private Functions
 
-
-  /*
-   * Function Prototype 					bool Debounce(int times);
-   *
-   * Description:							This function will poll the hard coded pin (C13) which the button is connected to on the MCU.
-   * 											If the button is on then the function will continue running until it has run "times" in
-   * 											integer input variable to fine tune the amount of times the button is polled before
-   * 											returning a true boolean if it is still on. If on any of these cycles the button comes
-   * 											back off or disconnected the function will exit with false representing the button is not
-   * 											pressed. Hard coded time to wait between presses is 20ms.
-   *
-   * Inputs:								int times : integer representing how many times the for loop runs to debounce the button.
-   *
-   * Outputs:								bool : true and false representing the button is on and the button is off respectively.
-   *
-   * Side Effects:							Function holds processor with waiting timer until the function has polled the button "times"
-   *
-   * Example Usage:							if (Debounce(4))		// Check for user input on C13
-   *										{
-   *										   HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
-   *									    }
-  */
-  bool Debounce(int times)
-  {
-	  // Local Variables
-	  int check = 0;
-	  uint32_t current_time = 0;
-	  uint32_t next_check = 0;
-
-	  // Main Function Loop
-	  for (int i = 0; i < times; i++)							// Run for the amount of times to wait
-	  {
-		  check = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);			// Poll the button
-		  next_check = HAL_GetTick() + 20;						// Set timer for 20ms
-
-		  // If button is off exit function and return a false value.
-		  if (!check)											// Check if the button is off
-		  {
-			  return false;
-		  }
-		  while (current_time < next_check)						// Wait for next check
-		  {
-			  current_time = HAL_GetTick();						// Update time check
-		  }
-	  }
-
-	  // Tell the user this is a validated press
-	  return true;
-  }
-
-
-
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -172,23 +123,27 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // Start LED Blink
-	  blink_current_time = HAL_GetTick();								// Update current time variable
-	  if (blink_next_time < blink_current_time)
+	  // Part 1
+	  if (LAB_TEST == 1)
 	  {
-		  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);						// Toggle LED
-		  blink_next_time = HAL_GetTick() + 1000;						// Set new timer for 1s
+		  // Start LED Blink
+
+		  blink_current_time = HAL_GetTick();								// Update current time variable
+		  if (blink_next_time < blink_current_time)
+		  {
+			  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);						// Toggle LED
+			  blink_next_time = HAL_GetTick() + 1000;						// Set new timer for 1s
+		  }
 	  }
 
-	  // Check for button press
-	  if (Debounce(4))		// Check for user input on C13
+	  // Part 2
+	  if (LAB_TEST == 2)
 	  {
-		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+		  // Check for button press
+		  if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7))
+			  if (VerifyButtonPress(GPIOB, GPIO_PIN_7, 8, 10))
+					  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
 	  }
-
-	  //HAL_Delay(1000); 							// Delay time in ms
-	  //HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);	// Toggle Pin on and off
-
 
     /* USER CODE END WHILE */
 
@@ -326,6 +281,48 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
+/*
+   * Function Prototype 					bool Debounce(int times);
+   *
+   * Description:							This function will poll the hard coded pin (C13) which the button is connected to on the MCU.
+   * 											If the button is on then the function will continue running until it has run "times" in
+   * 											integer input variable to fine tune the amount of times the button is polled before
+   * 											returning a true boolean if it is still on. If on any of these cycles the button comes
+   * 											back off or disconnected the function will exit with false representing the button is not
+   * 											pressed. Hard coded time to wait between presses is 20ms.
+   *
+   * Inputs:								int times : integer representing how many times the for loop runs to debounce the button.
+   *
+   * Outputs:								bool : true and false representing the button is on and the button is off respectively.
+   *
+   * Side Effects:							Function holds processor with waiting timer until the function has polled the button "times"
+   *
+   * Example Usage:							if (Debounce(4))		// Check for user input on C13
+   *										{
+   *										   HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
+   *									    }
+  */
+  uint8_t VerifyButtonPress(GPIO_TypeDef* PORT, uint16_t PIN, uint8_t positive_polls, uint8_t total_polls)
+  {
+  	// Verify user did not enter more successes than the total polls
+  	if (positive_polls > total_polls)
+  		return 0;	// Error
+  	// Poll user pin
+  	uint8_t positive_reads = 0;
+  	for (uint8_t i = 0; i < total_polls; i++)
+  	{
+  		if (HAL_GPIO_ReadPin(PORT, PIN))
+  			positive_polls++;
+  		HAL_Delay(10);		// 10ms delay | Toatl Function time = (total_polls * 10ms)
+  	}
+  	if (positive_reads >= positive_polls)
+  		return 1;	// Success
+  	else
+  		return 0;	// Failure
+  }
+
 
 /* USER CODE END 4 */
 
