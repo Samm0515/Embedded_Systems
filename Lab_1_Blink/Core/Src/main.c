@@ -284,25 +284,27 @@ static void MX_GPIO_Init(void)
 
 
 /*
-   * Function Prototype 					bool Debounce(int times);
+   * Function Prototype 					uint8_t VerifyButtonPress(GPIO_TypeDef* PORT, uint16_t PIN, uint8_t positive_polls, uint8_t total_polls);
    *
-   * Description:							This function will poll the hard coded pin (C13) which the button is connected to on the MCU.
-   * 											If the button is on then the function will continue running until it has run "times" in
-   * 											integer input variable to fine tune the amount of times the button is polled before
-   * 											returning a true boolean if it is still on. If on any of these cycles the button comes
-   * 											back off or disconnected the function will exit with false representing the button is not
-   * 											pressed. Hard coded time to wait between presses is 20ms.
+   * Description:							This function will poll the user defined pin which the button is connected to on the MCU.
+   * 											If the input pin is high for at least positive_polls then the function will return a positive value.
+   * 											The function will poll the user defined pin total_polls and accumulate the ammount logic high reads
+   * 											then the function will test this against the number the user entered as the check value.
    *
-   * Inputs:								int times : integer representing how many times the for loop runs to debounce the button.
+   * Inputs:								GPIO_TypeDef* PORT : 		GPIO struct representing the port the input is connected to.
+   * 										uint16_t PIN : GPIO pin 	GPIO pin the input is connected to.
+   * 										uint8_t positive_polls : 	Number of times the input must be logic high durring operation to get a
+   * 																		positive output.
+   * 										uint8_t total_polls : 		Number of times the function will poll input pin during operation.
    *
-   * Outputs:								bool : true and false representing the button is on and the button is off respectively.
+   * Outputs:								uint8_t : 1 and 0 representing the button is on and the button is off respectively.
    *
    * Side Effects:							Function holds processor with waiting timer until the function has polled the button "times"
    *
-   * Example Usage:							if (Debounce(4))		// Check for user input on C13
-   *										{
-   *										   HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
-   *									    }
+   * Example Usage:							// Check for button press
+   *										  	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7))
+   *												if (VerifyButtonPress(GPIOB, GPIO_PIN_7, 8, 10))
+   *													HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
   */
   uint8_t VerifyButtonPress(GPIO_TypeDef* PORT, uint16_t PIN, uint8_t positive_polls, uint8_t total_polls)
   {
