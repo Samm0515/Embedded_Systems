@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -44,7 +45,7 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define LAB_TEST 2
+#define LAB_TEST 1
 
 
 #define DOT_LENGTH 200
@@ -53,6 +54,9 @@ typedef struct
 
 #define LED_ON GPIO_PIN_SET
 #define LED_OFF GPIO_PIN_RESET
+
+#define LAB_UART 			&huart2
+#define LAB_UART_INSTANCE 	USART2
 
 /* USER CODE END PD */
 
@@ -85,6 +89,7 @@ uint8_t transfer_cplt;
 
 bool running = false;
 char display_buffer[100];
+char message_buffer[250];
 uint8_t display_index = 0;
 
 // Test select
@@ -93,6 +98,7 @@ uint8_t test = 1;		// 0 = test 01, 1 = test 02
 // Pin Definitions
 DEFINE_GPIO GREEN_LED = {GPIOC, GPIO_PIN_7};
 DEFINE_GPIO RED_LED = {GPIOA, GPIO_PIN_9};
+DEFINE_GPIO OSCILLISCOPE_READ = {GPIOB, GPIO_PIN_4};
 
 // Morse Code Lookup Table
 int lookup_table[26][5] = 	{
@@ -233,10 +239,12 @@ bool dot(GPIO_TypeDef *PORT, uint16_t PIN)
 {
 	// Turn on LED
 	HAL_GPIO_WritePin(PORT, PIN, LED_ON);
+	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_ON);
 	// Delay for dot
 	HAL_Delay(DOT_LENGTH);
 	// Turn LED off
 	HAL_GPIO_WritePin(PORT, PIN, LED_OFF);
+	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
 	// Delay Normal Time period
 	HAL_Delay(INTERMEDIATE_LENGTH);
 	// Return True to indicate success
@@ -263,10 +271,12 @@ bool dash(GPIO_TypeDef *PORT, uint16_t PIN)
 {
 	// Turn on LED
 	HAL_GPIO_WritePin(PORT, PIN, LED_ON);
+	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_ON);
 	// Delay for dot
 	HAL_Delay(DASH_LENGTH);
 	// Turn LED off
 	HAL_GPIO_WritePin(PORT, PIN, LED_OFF);
+	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
 	// Delay Normal Time period
 	HAL_Delay(INTERMEDIATE_LENGTH);
 	// Return True to indicate success
@@ -314,7 +324,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Test 02
-  HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);		// Start initial UART RX interrupt
+  HAL_UART_Receive_IT(LAB_UART, (uint8_t*)rx_data, 1);		// Start initial UART RX interrupt
   HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_OFF);
 
   /* USER CODE END 2 */
@@ -345,25 +355,29 @@ int main(void)
 	  {
 		  if (test && running)		// If Display flag is set
 		  {
-			  HAL_UART_AbortReceive_IT(&huart2);					// Disable RX interrupt while displaying morse code conversions
+			  HAL_UART_AbortReceive_IT(LAB_UART);					// Disable RX interrupt while displaying morse code conversions
 			  for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
 				{
 					if (!Display_Character((char)display_buffer[i]))
 					{
-						HAL_UART_Transmit(&huart2, (uint8_t*)"Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
+						HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, GPIO_PIN_SET);
+						sprintf(message_buffer, (char*)"Character not found...%c\n\r", (char)display_buffer[i]);
+						HAL_UART_Transmit(LAB_UART, (uint8_t*)message_buffer, strlen(message_buffer), 100);
+						memset(message_buffer, 0, strlen(message_buffer));
+						HAL_Delay(DOT_LENGTH);
+						HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, GPIO_PIN_RESET);
+
 					}
 				}
 
 
 			  // Reset display buffers and index
-			  for(int i = 0; i < 100; i++)
-				{
-				  display_buffer[i] = 0;
-				}
+			  memset(display_buffer, 0, strlen(display_buffer));
+
 			  display_index = 0;
 			  running = false;
 			  // Restart UART interrupt to start receiving data again
-			  HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);
+			  HAL_UART_Receive_IT(LAB_UART, (uint8_t*)rx_data, 1);
 		  }
 	  }
   }
@@ -820,7 +834,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, UCPD_DBN_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, OSCILISCOPE_READ_Pin|UCPD_DBN_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : UCPD_FLT_Pin */
   GPIO_InitStruct.Pin = UCPD_FLT_Pin;
@@ -842,8 +856,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_RED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : UCPD_DBN_Pin LED_BLUE_Pin */
-  GPIO_InitStruct.Pin = UCPD_DBN_Pin|LED_BLUE_Pin;
+  /*Configure GPIO pins : OSCILISCOPE_READ_Pin UCPD_DBN_Pin LED_BLUE_Pin */
+  GPIO_InitStruct.Pin = OSCILISCOPE_READ_Pin|UCPD_DBN_Pin|LED_BLUE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -889,7 +903,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		   */
 		  //HAL_UART_Transmit(&hlpuart1, rx_data, 6, 10);
 		  uint8_t i;
-		  	  if(huart->Instance == USART2)
+		  	  if(huart->Instance == LAB_UART_INSTANCE)
 		  	  {
 		  		  if(rx_index == 0)
 		  		  {
@@ -898,6 +912,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		  				 rx_buffer[i] = 0;
 		  			 }
 		  			 HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, 0);
+		  			 HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
 		  		  }
 
 		  		  if(rx_data[0] != 13){
@@ -907,14 +922,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		  			  rx_index = 0;
 		  			  transfer_cplt = 1;
 		  			  //HAL_UART_Transmit(&hlpuart1, "\n\r", 2, 100);
-		  			  HAL_UART_Transmit(&huart2, (uint8_t*)"\n\r", 2, 100);
+		  			  HAL_UART_Transmit(LAB_UART, (uint8_t*)"\n\r", 2, 100);
 		  			  if(!strcmp(rx_buffer, "LED ON"))
 		  			  {
 		  				HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, 1);
+		  				HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_ON);
 		  			  }
 		  		  }
-		  		  HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);
-		  		  HAL_UART_Transmit(&huart2, (uint8_t*)rx_data, strlen(rx_data), 100);
+		  		  HAL_UART_Receive_IT(LAB_UART, (uint8_t*)rx_data, 1);
+		  		  HAL_UART_Transmit(LAB_UART, (uint8_t*)rx_data, strlen(rx_data), 100);
 		  	  }
 
 	}
@@ -925,7 +941,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		UNUSED(huart);
 
 		uint8_t i;
-		if((huart->Instance == USART2) && !running)									// Check if interrupt came from USART 3 and not any of the other UART multiplexed with this port
+		if((huart->Instance == LAB_UART_INSTANCE) && !running)									// Check if interrupt came from USART 3 and not any of the other UART multiplexed with this port
 		{
 			if(rx_index == 0)														// If the position in the buffer is 0 then reset the whole buffer
 			{
@@ -945,7 +961,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		else																		// If incoming data is the carriage return do this...
 		{
 			transfer_cplt = 1;														// Set transfer complete flag to high
-			HAL_UART_Transmit(&huart2, (uint8_t *)"\n\r", 2, 100);								// Send new line and carriage return to serial monitor
+			HAL_UART_Transmit(LAB_UART, (uint8_t *)"\n\r", 2, 100);								// Send new line and carriage return to serial monitor
 			// Start Display
 
 			// Test 02
@@ -970,13 +986,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 					HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_ON);			// Turn on LED to indicate "LED ON" works
 				}
 			}
-
-
-
-
 		}
-		HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);									// Initialize UART interrupt again
-		HAL_UART_Transmit(&huart2, (uint8_t*)rx_data, 1, 100);								// Echo back UART received data
+		HAL_UART_Receive_IT(LAB_UART, (uint8_t*)rx_data, 1);									// Initialize UART interrupt again
+		HAL_UART_Transmit(LAB_UART, (uint8_t*)rx_data, 1, 100);								// Echo back UART received data
 		}
 	}
 }
