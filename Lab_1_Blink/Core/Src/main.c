@@ -35,7 +35,10 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+
+// LAB MACRO
 #define LAB_TEST 2			// LAB_TEST is the macro that controls what part of the lab is run for easy switching 1 = part1, 2 = part2
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -44,6 +47,7 @@ COM_InitTypeDef BspCOMInit;
 
 /* USER CODE BEGIN PV */
 
+// Timer Variables
 uint32_t blink_current_time = 1;
 uint32_t blink_next_time = 0;
 
@@ -55,6 +59,7 @@ static void MX_GPIO_Init(void);
 static void MX_ICACHE_Init(void);
 /* USER CODE BEGIN PFP */
 
+// Function Prototypes
 uint8_t VerifyButtonPress(GPIO_TypeDef* PORT, uint16_t PIN, uint8_t positive_polls, uint8_t total_polls);
 
 /* USER CODE END PFP */
@@ -127,7 +132,6 @@ int main(void)
 	  if (LAB_TEST == 1)
 	  {
 		  // Start LED Blink
-
 		  blink_current_time = HAL_GetTick();								// Update current time variable
 		  if (blink_next_time < blink_current_time)
 		  {
@@ -288,12 +292,12 @@ static void MX_GPIO_Init(void)
    *
    * Description:							This function will poll the user defined pin which the button is connected to on the MCU.
    * 											If the input pin is high for at least positive_polls then the function will return a positive value.
-   * 											The function will poll the user defined pin total_polls and accumulate the ammount logic high reads
+   * 											The function will poll the user defined pin total_polls and accumulate the amount logic high reads
    * 											then the function will test this against the number the user entered as the check value.
    *
    * Inputs:								GPIO_TypeDef* PORT : 		GPIO struct representing the port the input is connected to.
    * 										uint16_t PIN : GPIO pin 	GPIO pin the input is connected to.
-   * 										uint8_t positive_polls : 	Number of times the input must be logic high durring operation to get a
+   * 										uint8_t positive_polls : 	Number of times the input must be logic high during operation to get a
    * 																		positive output.
    * 										uint8_t total_polls : 		Number of times the function will poll input pin during operation.
    *
@@ -317,7 +321,7 @@ static void MX_GPIO_Init(void)
   	{
   		if (HAL_GPIO_ReadPin(PORT, PIN))
   			positive_reads++;
-  		HAL_Delay(20);		// 10ms delay | Toatl Function time = (total_polls * 10ms)
+  		HAL_Delay(20);		// 20ms delay | Total Function time = (total_polls * 20ms)
   	}
   	if (positive_reads >= positive_polls)
   		return 1;	// Success
