@@ -469,7 +469,7 @@ int main(void)
  80005c6:	429a      	cmp	r2, r3
  80005c8:	d2f4      	bcs.n	80005b4 <main+0x60>
 		  {
-			  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);						// Toggle LED
+			  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);						// Toggle LED
  80005ca:	2180      	movs	r1, #128	; 0x80
  80005cc:	4808      	ldr	r0, [pc, #32]	; (80005f0 <main+0x9c>)
  80005ce:	f001 f875 	bl	80016bc <HAL_GPIO_TogglePin>
@@ -485,7 +485,7 @@ int main(void)
  80005e4:	20000054 	.word	0x20000054
  80005e8:	20000000 	.word	0x20000000
  80005ec:	20000064 	.word	0x20000064
- 80005f0:	42020400 	.word	0x42020400
+ 80005f0:	42020800 	.word	0x42020800
 
 080005f4 <SystemClock_Config>:
 /**

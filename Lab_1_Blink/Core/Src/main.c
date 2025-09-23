@@ -131,7 +131,7 @@ int main(void)
 		  blink_current_time = HAL_GetTick();								// Update current time variable
 		  if (blink_next_time < blink_current_time)
 		  {
-			  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);						// Toggle LED
+			  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);						// Toggle LED
 			  blink_next_time = HAL_GetTick() + 1000;						// Set new timer for 1s
 		  }
 	  }
@@ -140,9 +140,9 @@ int main(void)
 	  if (LAB_TEST == 2)
 	  {
 		  // Check for button press
-		  if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7))
-			  if (VerifyButtonPress(GPIOB, GPIO_PIN_7, 8, 10))
-					  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+		  if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13))
+			  if (VerifyButtonPress(GPIOC, GPIO_PIN_13, 8, 10))
+					  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);
 	  }
 
     /* USER CODE END WHILE */
@@ -316,7 +316,7 @@ static void MX_GPIO_Init(void)
   	for (uint8_t i = 0; i < total_polls; i++)
   	{
   		if (HAL_GPIO_ReadPin(PORT, PIN))
-  			positive_polls++;
+  			positive_reads++;
   		HAL_Delay(10);		// 10ms delay | Toatl Function time = (total_polls * 10ms)
   	}
   	if (positive_reads >= positive_polls)

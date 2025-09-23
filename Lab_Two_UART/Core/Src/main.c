@@ -44,7 +44,7 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define LAB_TEST 0
+#define LAB_TEST 2
 
 
 #define DOT_LENGTH 200
@@ -65,6 +65,7 @@ typedef struct
 ADC_HandleTypeDef hadc1;
 
 UART_HandleTypeDef hlpuart1;
+UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 
 RTC_HandleTypeDef hrtc;
@@ -135,6 +136,7 @@ static void MX_RTC_Init(void);
 static void MX_UCPD1_Init(void);
 static void MX_USB_PCD_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 // Function Prototypes
@@ -308,10 +310,11 @@ int main(void)
   MX_UCPD1_Init();
   MX_USB_PCD_Init();
   MX_USART3_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   // Test 02
-  HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);		// Start initial UART RX interrupt
+  HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);		// Start initial UART RX interrupt
   HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, LED_OFF);
 
   /* USER CODE END 2 */
@@ -327,8 +330,9 @@ int main(void)
 	  // Test 00
 	  if (LAB_TEST == 0)
 	  {
-	  HAL_UART_Transmit(&huart3, tx_buffer, sizeof(tx_buffer), 10);
-	  HAL_Delay(1000);
+		  HAL_UART_Transmit(&hlpuart1, tx_buffer, sizeof(tx_buffer), 100);
+		  HAL_GPIO_TogglePin(GREEN_LED.port, GREEN_LED.pin);
+		  HAL_Delay(1000);
 	  }
 	  // Test 01
 	  if (LAB_TEST == 1)
@@ -341,12 +345,12 @@ int main(void)
 	  {
 		  if (test && running)		// If Display flag is set
 		  {
-			  HAL_UART_AbortReceive_IT(&huart3);					// Disable RX interrupt while displaying morse code conversions
+			  HAL_UART_AbortReceive_IT(&huart2);					// Disable RX interrupt while displaying morse code conversions
 			  for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
 				{
 					if (!Display_Character((char)display_buffer[i]))
 					{
-						HAL_UART_Transmit(&huart3, (uint8_t*)"Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
+						HAL_UART_Transmit(&huart2, (uint8_t*)"Character not found...\n\r", sizeof("Character not found...\n\r"), 10);
 					}
 				}
 
@@ -359,7 +363,7 @@ int main(void)
 			  display_index = 0;
 			  running = false;
 			  // Restart UART interrupt to start receiving data again
-			  HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);
+			  HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);
 		  }
 	  }
   }
@@ -573,6 +577,54 @@ static void MX_LPUART1_UART_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief USART3 Initialization Function
   * @param None
   * @retval None
@@ -755,11 +807,11 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
   HAL_PWREx_EnableVddIO2();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
@@ -837,13 +889,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		   */
 		  //HAL_UART_Transmit(&hlpuart1, rx_data, 6, 10);
 		  uint8_t i;
-		  	  if(huart->Instance == USART3)
+		  	  if(huart->Instance == USART2)
 		  	  {
-		  		  if(rx_index == 0){
-		  			 for(i = 0; i < 100; i++){
+		  		  if(rx_index == 0)
+		  		  {
+		  			 for(i = 0; i < 100; i++)
+		  			 {
 		  				 rx_buffer[i] = 0;
 		  			 }
-		  			 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
+		  			 HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, 0);
 		  		  }
 
 		  		  if(rx_data[0] != 13){
@@ -853,14 +907,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		  			  rx_index = 0;
 		  			  transfer_cplt = 1;
 		  			  //HAL_UART_Transmit(&hlpuart1, "\n\r", 2, 100);
-		  			  HAL_UART_Transmit(&huart3, (uint8_t*)"\n\r", 2, 100);
+		  			  HAL_UART_Transmit(&huart2, (uint8_t*)"\n\r", 2, 100);
 		  			  if(!strcmp(rx_buffer, "LED ON"))
 		  			  {
-		  				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 1);
+		  				HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, 1);
 		  			  }
 		  		  }
-		  		  HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);
-		  		  HAL_UART_Transmit(&huart3, (uint8_t*)rx_data, strlen(rx_data), 100);
+		  		  HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);
+		  		  HAL_UART_Transmit(&huart2, (uint8_t*)rx_data, strlen(rx_data), 100);
 		  	  }
 
 	}
@@ -871,7 +925,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		UNUSED(huart);
 
 		uint8_t i;
-		if((huart->Instance == USART3) && !running)									// Check if interrupt came from USART 3 and not any of the other UART multiplexed with this port
+		if((huart->Instance == USART2) && !running)									// Check if interrupt came from USART 3 and not any of the other UART multiplexed with this port
 		{
 			if(rx_index == 0)														// If the position in the buffer is 0 then reset the whole buffer
 			{
@@ -891,7 +945,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		else																		// If incoming data is the carriage return do this...
 		{
 			transfer_cplt = 1;														// Set transfer complete flag to high
-			HAL_UART_Transmit(&huart3, (uint8_t *)"\n\r", 2, 100);								// Send new line and carriage return to serial monitor
+			HAL_UART_Transmit(&huart2, (uint8_t *)"\n\r", 2, 100);								// Send new line and carriage return to serial monitor
 			// Start Display
 
 			// Test 02
@@ -921,8 +975,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 
 		}
-		HAL_UART_Receive_IT(&huart3, (uint8_t*)rx_data, 1);									// Initialize UART interrupt again
-		HAL_UART_Transmit(&huart3, (uint8_t*)rx_data, 1, 100);								// Echo back UART received data
+		HAL_UART_Receive_IT(&huart2, (uint8_t*)rx_data, 1);									// Initialize UART interrupt again
+		HAL_UART_Transmit(&huart2, (uint8_t*)rx_data, 1, 100);								// Echo back UART received data
 		}
 	}
 }
