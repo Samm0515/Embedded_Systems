@@ -35,7 +35,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define LAB_TEST 1			// LAB_TEST is the macro that controls what part of the lab is run for easy switching 1 = part1, 2 = part2
+#define LAB_TEST 2			// LAB_TEST is the macro that controls what part of the lab is run for easy switching 1 = part1, 2 = part2
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -317,7 +317,7 @@ static void MX_GPIO_Init(void)
   	{
   		if (HAL_GPIO_ReadPin(PORT, PIN))
   			positive_reads++;
-  		HAL_Delay(10);		// 10ms delay | Toatl Function time = (total_polls * 10ms)
+  		HAL_Delay(20);		// 10ms delay | Toatl Function time = (total_polls * 10ms)
   	}
   	if (positive_reads >= positive_polls)
   		return 1;	// Success

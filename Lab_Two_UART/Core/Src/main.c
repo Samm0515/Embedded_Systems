@@ -45,7 +45,7 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define LAB_TEST 1
+#define LAB_TEST 2
 
 
 #define DOT_LENGTH 200
@@ -96,12 +96,14 @@ uint8_t display_index = 0;
 uint8_t test = 1;		// 0 = test 01, 1 = test 02
 
 // Pin Definitions
-DEFINE_GPIO GREEN_LED = {GPIOC, GPIO_PIN_7};
-DEFINE_GPIO RED_LED = {GPIOA, GPIO_PIN_9};
+DEFINE_GPIO GREEN_LED = 		{GPIOC, GPIO_PIN_7};
+DEFINE_GPIO RED_LED = 			{GPIOA, GPIO_PIN_9};
+DEFINE_GPIO BLUE_LED = 			{GPIOB, GPIO_PIN_7};
 DEFINE_GPIO OSCILLISCOPE_READ = {GPIOB, GPIO_PIN_4};
 
 // Morse Code Lookup Table
-int lookup_table[26][5] = 	{
+int lookup_table[27][5] = 	{
+							{32,3,0,0,0},	  // SPACE
 							{65,1,2,0,0},     // A		// ASCII character in decimal then 1 = dot, 2 = dash.
 							{66,2,1,1,1},     // B
 							{67,2,1,2,1},     // C
@@ -149,6 +151,7 @@ static void MX_USART2_UART_Init(void);
 bool Display_Character(char input_char);
 bool dot(GPIO_TypeDef *port, uint16_t pin);
 bool dash(GPIO_TypeDef *port, uint16_t pin);
+bool space(GPIO_TypeDef *PORT, uint16_t PIN);
 
 /* USER CODE END PFP */
 
@@ -208,6 +211,10 @@ bool Display_Character(char input_char)
 	            {
 	            	dash(GREEN_LED.port, GREEN_LED.pin);	// Display a dash
 	            }
+	            if (value == 3)
+				{
+					space(GREEN_LED.port, GREEN_LED.pin);	// Display a space
+				}
 	        }
 	        // Character found and displayed
 	        return true;
@@ -247,6 +254,33 @@ bool dot(GPIO_TypeDef *PORT, uint16_t PIN)
 	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
 	// Delay Normal Time period
 	HAL_Delay(INTERMEDIATE_LENGTH);
+	// Return True to indicate success
+	return true;
+}
+
+
+/*
+ * Function Prototype 					bool space(GPIO_TypeDef *PORT, uint16_t PIN);
+ *
+ * Description:							This function will display a "space" in morse code through the LED which it takes the parameters
+ * 											for as inputs.
+ *
+ * Inputs:								GPIO_TypeDef *PORT : GPIO port from the PinDefine structure.
+ * 										uint16_t PIN : GPIO_PIN_X pin from the PinDefine structure.
+ *
+ * Outputs:								bool : true and false representing if the function has completed successfully or unsuccessfully respectively.
+ *
+ * Side Effects:						Function holds processor with waiting timer until the morse code finishes.
+ *
+ * Example Usage:						space(GREEN_LED.port, GREEN_LED.pin);
+*/
+bool space(GPIO_TypeDef *PORT, uint16_t PIN)
+{
+	// Turn on LED
+	HAL_GPIO_WritePin(PORT, PIN, LED_OFF);
+	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
+	// Delay for Dash
+	HAL_Delay(DASH_LENGTH);
 	// Return True to indicate success
 	return true;
 }
@@ -366,10 +400,8 @@ int main(void)
 						memset(message_buffer, 0, strlen(message_buffer));
 						HAL_Delay(DOT_LENGTH);
 						HAL_GPIO_WritePin(RED_LED.port, RED_LED.pin, GPIO_PIN_RESET);
-
 					}
 				}
-
 
 			  // Reset display buffers and index
 			  memset(display_buffer, 0, strlen(display_buffer));
@@ -911,7 +943,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		  			 {
 		  				 rx_buffer[i] = 0;
 		  			 }
-		  			 HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, 0);
+		  			 HAL_GPIO_WritePin(BLUE_LED.port, BLUE_LED.pin, 0);
 		  			 HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
 		  		  }
 
@@ -925,7 +957,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		  			  HAL_UART_Transmit(LAB_UART, (uint8_t*)"\n\r", 2, 100);
 		  			  if(!strcmp(rx_buffer, "LED ON"))
 		  			  {
-		  				HAL_GPIO_WritePin(GREEN_LED.port, GREEN_LED.pin, 1);
+		  				HAL_GPIO_WritePin(BLUE_LED.port, BLUE_LED.pin, 1);
 		  				HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_ON);
 		  			  }
 		  		  }
