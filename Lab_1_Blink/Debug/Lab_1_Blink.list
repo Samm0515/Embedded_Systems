@@ -31,7 +31,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  13 .debug_info   0000c871  00000000  00000000  000200ad  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00001d1b  00000000  00000000  0002c91e  2**0
+ 14 .debug_abbrev 00001d1c  00000000  00000000  0002c91e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_aranges 00000a80  00000000  00000000  0002e640  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -831,7 +831,7 @@ static void MX_GPIO_Init(void)
  80007cc:	7bfb      	ldrb	r3, [r7, #15]
  80007ce:	3301      	adds	r3, #1
  80007d0:	73fb      	strb	r3, [r7, #15]
-  		HAL_Delay(20);		// 10ms delay | Toatl Function time = (total_polls * 10ms)
+  		HAL_Delay(20);		// 20ms delay | Total Function time = (total_polls * 20ms)
  80007d2:	2014      	movs	r0, #20
  80007d4:	f000 fc76 	bl	80010c4 <HAL_Delay>
   	for (uint8_t i = 0; i < total_polls; i++)
