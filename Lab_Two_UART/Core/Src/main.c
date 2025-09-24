@@ -45,7 +45,7 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define LAB_TEST 2
+#define LAB_TEST 0
 
 
 #define DOT_LENGTH 200
