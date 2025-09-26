@@ -38,7 +38,7 @@
 /* USER CODE BEGIN PM */
 
 // LAB MACRO
-#define LAB_TEST 2			// LAB_TEST is the macro that controls what part of the lab is run for easy switching 1 = part1, 2 = part2
+#define LAB_TEST 1			// LAB_TEST is the macro that controls what part of the lab is run for easy switching 1 = part1, 2 = part2
 
 /* USER CODE END PM */
 
@@ -52,10 +52,6 @@ RTC_HandleTypeDef hrtc;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
-
-// Timer Variables
-uint32_t blink_current_time = 1;
-uint32_t blink_next_time = 0;
 
 /* USER CODE END PV */
 
@@ -126,12 +122,9 @@ int main(void)
 	  if (LAB_TEST == 1)
 	  {
 		  // Start LED Blink
-		  blink_current_time = HAL_GetTick();								// Update current time variable
-		  if (blink_next_time < blink_current_time)
-		  {
-			  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);						// Toggle LED
-			  blink_next_time = HAL_GetTick() + 1000;						// Set new timer for 1s
-		  }
+		  HAL_Delay(1000); 									// Delay time in ms T = 2s = 1/T = 0.5 Hz
+		  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_7);	        // Toggle Pin on and off
+
 	  }
 
 	  // Part 2
