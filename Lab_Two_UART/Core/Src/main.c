@@ -45,14 +45,15 @@ typedef struct
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define LAB_TEST 0				// LAB_TEST : MACRO to enable the running of the different tests in lab 2 (0 for test0)(1 for test1)(2 for test2)
+#define LAB_TEST 2				// LAB_TEST : MACRO to enable the running of the different tests in lab 2 (0 for test0)(1 for test1)(2 for test2)
 #define ENABLE_TIMESTAMP 1		// Setting this to 1 or greater enables time stamps in the printing of test 1 so we can tell how far apart they were sent.
 
 
 #define DOT_LENGTH 200
-#define DASH_LENGTH 1000
+#define DASH_LENGTH 500
 #define INTERMEDIATE_LENGTH 200
 #define INTERCHARACTER_LENGTH 600
+#define SPACE_LENGTH 1000
 
 #define LED_ON GPIO_PIN_SET
 #define LED_OFF GPIO_PIN_RESET
@@ -93,6 +94,7 @@ bool running = false;
 char display_buffer[100];
 char message_buffer[250];
 uint8_t display_index = 0;
+volatile bool next_space = false;
 
 // Pin Definitions
 DEFINE_GPIO GREEN_LED = 		{GPIOC, GPIO_PIN_7};
@@ -213,9 +215,28 @@ bool Display_Character(char input_char)
 	            if (value == 3)
 				{
 					space(GREEN_LED.port, GREEN_LED.pin);	// Display a space
+					return true;
 				}
-	            // Display inter-character
-	            HAL_Delay(INTERCHARACTER_LENGTH);
+	            // Check if nect char is a space
+	            if (next_space)
+	            {
+	            	return true;
+	            }
+	            else
+	            {
+					// Check if next char exists
+					value = lookup_table[row_match][i+1];
+					if ((value == 1) || (value == 2))
+					{
+						HAL_Delay(INTERMEDIATE_LENGTH);
+					}
+					// if end of character display inter-character length
+					else
+					{
+						// Display inter-character
+						HAL_Delay(INTERCHARACTER_LENGTH);
+					}
+	            }
 	        }
 	        // Character found and displayed
 	        return true;
@@ -253,8 +274,6 @@ bool dot(GPIO_TypeDef *PORT, uint16_t PIN)
 	// Turn LED off
 	HAL_GPIO_WritePin(PORT, PIN, LED_OFF);
 	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
-	// Delay Normal Time period
-	HAL_Delay(INTERMEDIATE_LENGTH);
 	// Return True to indicate success
 	return true;
 }
@@ -281,7 +300,7 @@ bool space(GPIO_TypeDef *PORT, uint16_t PIN)
 	HAL_GPIO_WritePin(PORT, PIN, LED_OFF);
 	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
 	// Delay for Dash
-	HAL_Delay(DASH_LENGTH);
+	HAL_Delay(SPACE_LENGTH);
 	// Return True to indicate success
 	return true;
 }
@@ -312,8 +331,6 @@ bool dash(GPIO_TypeDef *PORT, uint16_t PIN)
 	// Turn LED off
 	HAL_GPIO_WritePin(PORT, PIN, LED_OFF);
 	HAL_GPIO_WritePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin, LED_OFF);
-	// Delay Normal Time period
-	HAL_Delay(INTERMEDIATE_LENGTH);
 	// Return True to indicate success
 	return true;
 }
@@ -383,6 +400,7 @@ int main(void)
 			  HAL_UART_Transmit(&hlpuart1, (uint8_t*)message_buffer, strlen(message_buffer), 100);
 			  memset(message_buffer, 0, strlen(message_buffer));
 			  HAL_GPIO_TogglePin(GREEN_LED.port, GREEN_LED.pin);
+			  HAL_GPIO_TogglePin(OSCILLISCOPE_READ.port, OSCILLISCOPE_READ.pin);
 			  HAL_Delay(1000);
 		  }
 		  // Messages without time stamps
@@ -410,6 +428,15 @@ int main(void)
 			  HAL_UART_AbortReceive_IT(LAB_UART);					// Disable RX interrupt while displaying morse code conversions
 			  for (int i = 0; i < display_index; i++)				// Display all of the characters in the display buffer in their morse code conversions
 				{
+				  	// Check if next char is a space
+				  	if ((char)display_buffer[i+1] == ' ')
+				  	{
+				  		next_space = true;
+				  	}
+				  	else
+				  	{
+				  		next_space = false;
+				  	}
 					if (!Display_Character((char)display_buffer[i]))
 					{
 						// If character is not in the lookup table

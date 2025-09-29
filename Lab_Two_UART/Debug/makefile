@@ -60,8 +60,8 @@ all: main-build
 main-build: Lab_Two_UART.elf secondary-outputs
 
 # Tool invocations
-Lab_Two_UART.elf Lab_Two_UART.map: $(OBJS) $(USER_OBJS) /Users/samuel.meysembourg/Embedded_Systems/Lab_Two_UART/STM32L552ZETXQ_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Lab_Two_UART.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/Users/samuel.meysembourg/Embedded_Systems/Lab_Two_UART/STM32L552ZETXQ_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab_Two_UART.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Lab_Two_UART.elf Lab_Two_UART.map: $(OBJS) $(USER_OBJS) /Users/sammeysembourg/Embedded_Systems/Lab_Two_UART/STM32L552ZETXQ_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Lab_Two_UART.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/Users/sammeysembourg/Embedded_Systems/Lab_Two_UART/STM32L552ZETXQ_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab_Two_UART.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
