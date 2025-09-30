@@ -103,34 +103,34 @@ DEFINE_GPIO BLUE_LED = 			{GPIOB, GPIO_PIN_7};
 DEFINE_GPIO OSCILLISCOPE_READ = {GPIOB, GPIO_PIN_4};
 
 // Morse Code Lookup Table
-int lookup_table[27][5] = 	{
-							{32,3,0,0,0},	  // SPACE
-							{65,1,2,0,0},     // A		// ASCII character in decimal then 1 = dot, 2 = dash.
-							{66,2,1,1,1},     // B
-							{67,2,1,2,1},     // C
-							{68,2,1,1,0},     // D
-							{69,1,0,0,0},     // E
-							{70,1,1,2,1},     // F
-							{71,2,2,1,0},     // G
-							{72,1,1,1,1},     // H
-							{73,1,1,0,0},     // I
-							{74,1,2,2,2},     // J
-							{75,2,1,2,0},     // K
-							{76,1,2,1,1},     // L
-							{77,2,2,0,0},     // M
-							{78,2,1,0,0},     // N
-							{79,2,2,2,0},     // O
-							{80,1,2,2,1},     // P
-							{81,2,2,1,2},     // Q
-							{82,1,2,1,0},     // R
-							{83,1,1,1,0},     // S
-							{84,2,0,0,0},     // T
-							{85,1,1,2,0},     // U
-							{86,1,1,1,2},     // V
-							{87,1,2,2,0},     // W
-							{88,2,1,1,2},     // X
-							{89,2,1,2,2},     // Y
-							{90,2,2,1,1}      // Z
+int lookup_table[27][8] = 	{
+							{32,4,0,0,0,0,0,0},	  // SPACE
+							{65,1,3,2,0,0,0,0},     // A		// ASCII character in decimal then 1 = dot, 2 = dash, 3 = IntermediatePause, 4 = Space
+							{66,2,3,1,3,1,3,1},     // B
+							{67,2,3,1,3,2,3,1},     // C
+							{68,2,3,1,3,1,0,0},     // D
+							{69,1,0,0,0,0,0,0},     // E
+							{70,1,3,1,3,2,3,1},     // F
+							{71,2,3,2,3,1,0,0},     // G
+							{72,1,3,1,3,1,3,1},     // H
+							{73,1,3,1,0,0,0,0},     // I
+							{74,1,3,2,3,2,3,2},     // J
+							{75,2,3,1,3,2,0,0},     // K
+							{76,1,3,2,3,1,3,1},     // L
+							{77,2,3,2,0,0,0,0},     // M
+							{78,2,3,1,0,0,0,0},     // N
+							{79,2,3,2,3,2,0,0},     // O
+							{80,1,3,2,3,2,3,1},     // P
+							{81,2,3,2,3,1,3,2},     // Q
+							{82,1,3,2,3,1,0,0},     // R
+							{83,1,3,1,3,1,0,0},     // S
+							{84,2,0,0,0,0,0,0},     // T
+							{85,1,3,1,3,2,0,0},     // U
+							{86,1,3,1,3,1,3,2},     // V
+							{87,1,3,2,3,2,0,0},     // W
+							{88,2,3,1,3,1,3,2},     // X
+							{89,2,3,1,3,2,3,2},     // Y
+							{90,2,3,2,3,1,3,1}      // Z
 							};
 
 /* USER CODE END PV */
@@ -199,53 +199,50 @@ bool Display_Character(char input_char)
 				break;
 			}
 	    }
+	    // Match Found
 	    if (match_found)
 	    {
-	        for (int i = 1; i < 5; i++)
+	    	int value;
+
+	        for (int i = 1; i < 8; i++)
 	        {	// Display character
-	            int value = lookup_table[row_match][i];
+	        	value = lookup_table[row_match][i];
+
 	            if (value == 1)
 	            {
 	            	dot(GREEN_LED.port, GREEN_LED.pin);		// Display a dot
 	            }
-	            if (value == 2)
+	            else if (value == 2)
 	            {
 	            	dash(GREEN_LED.port, GREEN_LED.pin);	// Display a dash
 	            }
-	            if (value == 3)
+	            else if (value == 3)
+	            {
+	            	HAL_Delay(INTERMEDIATE_LENGTH);
+	            }
+	            else if (value == 4)
 				{
 					space(GREEN_LED.port, GREEN_LED.pin);	// Display a space
-					return true;
 				}
-	            // Check if nect char is a space
-	            if (next_space)
-	            {
-	            	return true;
-	            }
-	            else
-	            {
-					// Check if next char exists
-					value = lookup_table[row_match][i+1];
-					if ((value == 1) || (value == 2))
-					{
-						HAL_Delay(INTERMEDIATE_LENGTH);
-					}
-					// if end of character display inter-character length
-					else
-					{
-						// Display inter-character
-						HAL_Delay(INTERCHARACTER_LENGTH);
-					}
-	            }
+
 	        }
-	        // Character found and displayed
-	        return true;
+	        // Check if next char is a space or if current char is space
+			if (next_space || (value == 4))
+			{
+				return true;
+			}
+			else
+			{
+				HAL_Delay(INTERCHARACTER_LENGTH);
+				return true;
+			}
 	    }
-	    // No match found
+	    // No match mound
 	    else
 	    {
 	    	return false;
 	    }
+
 }
 
 
