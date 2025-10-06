@@ -61,7 +61,7 @@ main-build: LAB_03_ADC_DAC.elf secondary-outputs
 
 # Tool invocations
 LAB_03_ADC_DAC.elf LAB_03_ADC_DAC.map: $(OBJS) $(USER_OBJS) /Users/sammeysembourg/Embedded_Systems/LAB_03_ADC_DAC/STM32L552ZETXQ_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "LAB_03_ADC_DAC.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/Users/sammeysembourg/Embedded_Systems/LAB_03_ADC_DAC/STM32L552ZETXQ_FLASH.ld" --specs=nosys.specs -Wl,-Map="LAB_03_ADC_DAC.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "LAB_03_ADC_DAC.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/Users/sammeysembourg/Embedded_Systems/LAB_03_ADC_DAC/STM32L552ZETXQ_FLASH.ld" --specs=nosys.specs -Wl,-Map="LAB_03_ADC_DAC.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

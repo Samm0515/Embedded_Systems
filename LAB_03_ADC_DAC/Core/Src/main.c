@@ -114,8 +114,9 @@ int main(void)
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
 
-  // Enable ADC
-  HAL_ADC_Start(&hadc1);
+  // Buffer
+  buffer_t BUFFER;
+  INIT_Buffer(&BUFFER);
 
   /* USER CODE END 2 */
 
@@ -127,17 +128,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	// Get current ADC Value
-	HAL_ADC_PollForConversion(&hadc1, 100);
-	raw = HAL_ADC_GetValue(&hadc1);
+	// Process current ADC Value
+	raw = processADC(&BUFFER);
 
-	// Write values to buffer
-	sprintf(tx_buffer, "ADC_VALUE : %lu\n\r", raw);
-
-	// Transmit the buffer to the computer
+	// Write values to buffer and Transmit, Then clear the buffer
+	float voltage = (raw / (float)4096) * (float)3.3;
+	sprintf(tx_buffer, "ADC_VALUE : %.2f\n\r", voltage);
 	HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
-
-	// Clear the buffer
 	memset(tx_buffer, 0, strlen(tx_buffer));
 
 	// Delay 1000 ms
@@ -255,7 +252,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -499,12 +496,6 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, UCPD_DBN_Pin|LED_BLUE_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : VBUS_SENSE_Pin */
-  GPIO_InitStruct.Pin = VBUS_SENSE_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(VBUS_SENSE_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : UCPD_FLT_Pin */
   GPIO_InitStruct.Pin = UCPD_FLT_Pin;
