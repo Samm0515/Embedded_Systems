@@ -27,6 +27,7 @@ void INIT_Buffer(buffer_t* buffer)
 {
 	memset(buffer->buff, 0, sizeof(buffer->buff));
 	buffer->index = 0;
+	buffer->total = 0;
 
 	// Fill Entire Buffer
 	while (buffer->index < BUFFER_SIZE)
@@ -39,7 +40,13 @@ void INIT_Buffer(buffer_t* buffer)
 		// Add new value into the buffer
 		buffer->buff[buffer->index] = value;
 		buffer->index = (buffer->index + 1);
+
+		// Add to running total
+		buffer->total += value;
 	}
+
+	// Reset to beginning
+	buffer->index = 0;
 }
 
 

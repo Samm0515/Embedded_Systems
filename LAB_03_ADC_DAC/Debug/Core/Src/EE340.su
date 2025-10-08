@@ -1,2 +1,2 @@
 ../Core/Src/EE340.c:26:6:INIT_Buffer	24	static
-../Core/Src/EE340.c:59:10:processADC	24	static
+../Core/Src/EE340.c:66:10:processADC	24	static
