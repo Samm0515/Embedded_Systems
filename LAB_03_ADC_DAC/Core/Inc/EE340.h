@@ -28,6 +28,7 @@ typedef struct buffer
 }buffer_t;
 
 
+
 /*
  * Function Prototype : 			_
  *
@@ -57,6 +58,9 @@ void INIT_Buffer(buffer_t* buffer);
  * Example Usage :					_
  */
 uint32_t processADC(buffer_t* buffer);
+
+
+
 
 
 #endif /* INC_EE340_H_ */
