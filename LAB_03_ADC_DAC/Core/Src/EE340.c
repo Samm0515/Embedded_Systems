@@ -62,21 +62,20 @@ uint32_t processADC(buffer_t* buffer)
 	HAL_ADC_PollForConversion(&hadc1, 1000);
 	uint32_t value = HAL_ADC_GetValue(&hadc1);
 
+	// Subtract oldest value from the buffer
+	buffer->total -= buffer->buff[buffer->index];
+
 	// Add new value into the buffer
 	buffer->buff[buffer->index] = value;
+
+	// Add new value to running sum
+	buffer->total += value;
 
 	// Update Index Value with the modulus ( when Index + 1 = 100 and buffer size = 100 output is 0)
 	buffer->index = (buffer->index + 1) % BUFFER_SIZE;
 
-	// Calculate the running average of the buffer
-	uint64_t total = 0;
-	for (int i = 0; i < BUFFER_SIZE; i++)
-	{
-		total += buffer->buff[i];
-	}
-
 	// Return the average of the buffer
-	return (uint32_t)(total / BUFFER_SIZE);
+	return (uint32_t)(buffer->total / BUFFER_SIZE);
 }
 
 

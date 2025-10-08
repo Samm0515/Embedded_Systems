@@ -22,6 +22,8 @@ typedef struct buffer
 	uint32_t buff[BUFFER_SIZE];
 	// Buffer Index
 	uint16_t index;
+	// Running sum
+	uint32_t total;
 
 }buffer_t;
 
