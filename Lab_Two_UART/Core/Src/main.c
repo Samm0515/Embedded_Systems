@@ -157,6 +157,8 @@ bool space(GPIO_TypeDef *PORT, uint16_t PIN);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
+
+
 /* USER CODE BEGIN 0 */
 
 // Functions
