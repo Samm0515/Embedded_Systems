@@ -7646,58 +7646,58 @@ LOAD /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.id
  .debug_line    0x00000000000183be      0xaf5 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_ll_gpio.o
  .debug_line    0x0000000000018eb3     0x1098 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_ll_usb.o
 
-.debug_str      0x0000000000000000   0x12d1e4
- .debug_str     0x0000000000000000   0x1119ec ./Core/Src/EE340.o
-                                     0x1137fa (size before relaxing)
- .debug_str     0x00000000001119ec    0x12a84 ./Core/Src/main.o
-                                     0x126333 (size before relaxing)
- .debug_str     0x0000000000124470      0x412 ./Core/Src/stm32l5xx_hal_msp.o
+.debug_str      0x0000000000000000   0x12d220
+ .debug_str     0x0000000000000000   0x1119e8 ./Core/Src/EE340.o
+                                     0x1137f6 (size before relaxing)
+ .debug_str     0x00000000001119e8    0x12a84 ./Core/Src/main.o
+                                     0x12632f (size before relaxing)
+ .debug_str     0x000000000012446c      0x452 ./Core/Src/stm32l5xx_hal_msp.o
                                      0x1228ad (size before relaxing)
- .debug_str     0x0000000000124882       0xc9 ./Core/Src/stm32l5xx_it.o
+ .debug_str     0x00000000001248be       0xc9 ./Core/Src/stm32l5xx_it.o
                                      0x121665 (size before relaxing)
- .debug_str     0x000000000012494b     0x1ff6 ./Core/Src/syscalls.o
+ .debug_str     0x0000000000124987     0x1ff6 ./Core/Src/syscalls.o
                                        0x98e2 (size before relaxing)
- .debug_str     0x0000000000126941       0x6b ./Core/Src/sysmem.o
+ .debug_str     0x000000000012697d       0x6b ./Core/Src/sysmem.o
                                        0x6099 (size before relaxing)
- .debug_str     0x00000000001269ac      0x17d ./Core/Src/system_stm32l5xx.o
+ .debug_str     0x00000000001269e8      0x17d ./Core/Src/system_stm32l5xx.o
                                      0x110244 (size before relaxing)
- .debug_str     0x0000000000126b29       0x35 ./Core/Startup/startup_stm32l552zetxq.o
+ .debug_str     0x0000000000126b65       0x35 ./Core/Startup/startup_stm32l552zetxq.o
                                          0x75 (size before relaxing)
- .debug_str     0x0000000000126b5e      0xb29 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal.o
+ .debug_str     0x0000000000126b9a      0xb29 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal.o
                                      0x110dbb (size before relaxing)
- .debug_str     0x0000000000127687      0xa67 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_adc.o
+ .debug_str     0x00000000001276c3      0xa67 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_adc.o
                                      0x1110df (size before relaxing)
- .debug_str     0x00000000001280ee      0x665 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_adc_ex.o
+ .debug_str     0x000000000012812a      0x665 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_adc_ex.o
                                      0x11109a (size before relaxing)
- .debug_str     0x0000000000128753      0x3ec ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_cortex.o
+ .debug_str     0x000000000012878f      0x3ec ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_cortex.o
                                      0x110bfa (size before relaxing)
- .debug_str     0x0000000000128b3f      0x190 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gpio.o
+ .debug_str     0x0000000000128b7b      0x190 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gpio.o
                                      0x1101cd (size before relaxing)
- .debug_str     0x0000000000128ccf      0x673 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_icache.o
+ .debug_str     0x0000000000128d0b      0x673 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_icache.o
                                      0x110620 (size before relaxing)
- .debug_str     0x0000000000129342      0x55e ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pcd.o
+ .debug_str     0x000000000012937e      0x55e ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pcd.o
                                      0x1108a4 (size before relaxing)
- .debug_str     0x00000000001298a0      0x186 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pcd_ex.o
+ .debug_str     0x00000000001298dc      0x186 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pcd_ex.o
                                      0x1104e0 (size before relaxing)
- .debug_str     0x0000000000129a26      0x396 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pwr.o
+ .debug_str     0x0000000000129a62      0x396 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pwr.o
                                      0x110652 (size before relaxing)
- .debug_str     0x0000000000129dbc      0x618 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pwr_ex.o
+ .debug_str     0x0000000000129df8      0x618 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_pwr_ex.o
                                      0x1109a9 (size before relaxing)
- .debug_str     0x000000000012a3d4      0x3e3 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rcc.o
+ .debug_str     0x000000000012a410      0x3e3 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rcc.o
                                      0x11085e (size before relaxing)
- .debug_str     0x000000000012a7b7      0x799 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rcc_ex.o
+ .debug_str     0x000000000012a7f3      0x799 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rcc_ex.o
                                      0x110db4 (size before relaxing)
- .debug_str     0x000000000012af50      0x445 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rtc.o
+ .debug_str     0x000000000012af8c      0x445 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rtc.o
                                      0x11067c (size before relaxing)
- .debug_str     0x000000000012b395      0xaee ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rtc_ex.o
+ .debug_str     0x000000000012b3d1      0xaee ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_rtc_ex.o
                                      0x110fd0 (size before relaxing)
- .debug_str     0x000000000012be83      0x9cb ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_uart.o
+ .debug_str     0x000000000012bebf      0x9cb ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_uart.o
                                      0x111184 (size before relaxing)
- .debug_str     0x000000000012c84e      0x26b ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_uart_ex.o
+ .debug_str     0x000000000012c88a      0x26b ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_uart_ex.o
                                      0x110912 (size before relaxing)
- .debug_str     0x000000000012cab9      0x658 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_ll_gpio.o
+ .debug_str     0x000000000012caf5      0x658 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_ll_gpio.o
                                      0x111cac (size before relaxing)
- .debug_str     0x000000000012d111       0xd3 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_ll_usb.o
+ .debug_str     0x000000000012d14d       0xd3 ./Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_ll_usb.o
                                      0x1103e1 (size before relaxing)
 
 .debug_frame    0x0000000000000000     0x71c4

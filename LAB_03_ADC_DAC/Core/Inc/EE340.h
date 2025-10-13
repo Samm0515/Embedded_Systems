@@ -1,8 +1,9 @@
 /*
  * EE340.h
- *
- *  Created on: Oct 6, 2025
- *      Author: sammeysembourg
+
+ *      Description :					This is a library to read the values for an ADC
+ *      Author :						Samuel Meysembourg
+ *      Date Created :					01-13-2025
  */
 
 #ifndef INC_EE340_H_
