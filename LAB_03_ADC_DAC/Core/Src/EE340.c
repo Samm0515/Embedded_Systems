@@ -1,10 +1,11 @@
 /*
- * EE340.c
+ * 		EE340.c
  *
- *	LAB03_EE340
+ *		LAB03_EE340
  *
- *  Created on: Oct 6, 2025
- *  Author: Samuel Meysembourg
+ *  	Created on: Oct 6, 2025
+ *
+ *  	Author: Samuel Meysembourg
  *
  */
 #include "EE340.h"

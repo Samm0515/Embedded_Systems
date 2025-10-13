@@ -131,8 +131,10 @@ int main(void)
 	// Process current ADC Value
 	raw = processADC(&BUFFER);
 
-	// Write values to buffer and Transmit, Then clear the buffer
+	// Convert adc counts to a voltage
 	float voltage = (raw / (float)4096) * (float)3.3;
+
+	// Write values to buffer and Transmit, Then clear the buffer
 	sprintf(tx_buffer, "ADC_VALUE : %.2f\n\r", voltage);
 	HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
 	memset(tx_buffer, 0, strlen(tx_buffer));
