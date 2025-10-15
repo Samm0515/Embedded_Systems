@@ -41,6 +41,9 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
+// Timing Macros
+#define POLL_DELAY 1000
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -53,6 +56,9 @@ RTC_HandleTypeDef hrtc;
 PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN PV */
+
+// Timers
+uint32_t next_poll = 0;
 
 /* USER CODE END PV */
 
@@ -128,19 +134,22 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	// Process current ADC Value
-	raw = processADC(&BUFFER);
+	  if (HAL_GetTick() > next_poll)
+	  {
+		  // Reset timer
+		  next_poll = HAL_GetTick() + POLL_DELAY;
 
-	// Convert adc counts to a voltage
-	float voltage = (raw / (float)4096) * (float)3.3;
+		  // Process current ADC Value
+		  raw = processADC(&BUFFER);
 
-	// Write values to buffer and Transmit, Then clear the buffer
-	sprintf(tx_buffer, "ADC_VALUE : %.2f\n\r", voltage);
-	HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
-	memset(tx_buffer, 0, strlen(tx_buffer));
+		  // Convert adc counts to a voltage
+		  float voltage = (raw / (float)4096) * (float)3.3;
 
-	// Delay 1000 ms
-	HAL_Delay(1000);
+		  // Write values to buffer and Transmit, Then clear the buffer
+		  sprintf(tx_buffer, "ADC_VALUE : %.2f\n\r", voltage);
+		  HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
+		  memset(tx_buffer, 0, strlen(tx_buffer));
+	  }
   }
   /* USER CODE END 3 */
 }
