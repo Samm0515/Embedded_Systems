@@ -44,6 +44,9 @@
 // Timing Macros
 #define POLL_DELAY 1000
 
+// Calibration Factors
+#define ADC_CALIBRATION_FACTOR 1.24		// 4.1V / 3.3V = 1.2424
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -143,7 +146,7 @@ int main(void)
 		  raw = processADC(&BUFFER);
 
 		  // Convert adc counts to a voltage
-		  float voltage = (raw / (float)4096) * (float)3.3;
+		  float voltage = ((raw / (float)4096) * (float)3.3) * ADC_CALIBRATION_FACTOR;
 
 		  // Write values to buffer and Transmit, Then clear the buffer
 		  sprintf(tx_buffer, "ADC_VALUE : %.2f\n\r", voltage);
