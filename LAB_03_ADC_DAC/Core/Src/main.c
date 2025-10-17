@@ -45,7 +45,7 @@
 #define POLL_DELAY 1000
 
 // Calibration Factors
-#define ADC_CALIBRATION_FACTOR 1.24		// 4.1V / 3.3V = 1.2424
+#define ADC_CALIBRATION_FACTOR 1.20		// 4.1V / 3.3V = 1.2424
 
 /* USER CODE END PM */
 
@@ -76,6 +76,9 @@ static void MX_UCPD1_Init(void);
 static void MX_USB_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
+// Function Prototypes
+void PrintOutput(uint32_t* raw, float* voltage);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -92,8 +95,8 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
 	// LAB 03 Variables
-	volatile uint32_t raw;
-	char tx_buffer[100];
+	uint32_t raw;
+
 
   /* USER CODE END 1 */
 
@@ -137,7 +140,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  // Display the vlaues to the user based on the delay macro
+	  // Display the values to the user based on the delay macro
 	  if (HAL_GetTick() > next_poll)
 	  {
 		  // Reset timer :)
@@ -148,14 +151,10 @@ int main(void)
 
 		  // Convert ADC counts to a voltage and then apply correction factor
 		  float voltage = ((raw / (float)4096) * (float)3.3) * ADC_CALIBRATION_FACTOR;
+		  raw = raw * ADC_CALIBRATION_FACTOR;
 
-		  // Write values to buffer and Transmit, Then clear the buffer
-		  sprintf(tx_buffer, "[%lu]\tADC_VALUE : %lu     Voltage : %.2fV\n\r",
-				  /* Time in Seconds for runtime*/							(HAL_GetTick() / 1000),
-				  /* ADC count value with correction factor */	(uint32_t)(raw * ADC_CALIBRATION_FACTOR),
-				  /* Voltage with correction factor */			voltage);
-		  HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
-		  memset(tx_buffer, 0, strlen(tx_buffer));
+		  // Display feedback to user
+		  PrintOutput(&raw, &voltage);
 	  }
 
 	  // Else add new value to the buffer and update the running sum
@@ -554,6 +553,33 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+/*
+ * Function Prototype : 			void PrintOutput(uint32_t* raw, float* voltage);
+ *
+ * Description :					This function takes the raw value and the voltage value and concatenates them into a
+ * 										string that can be easily read by the user then it sends it over UART to the
+ * 										student computer.
+ *
+ * Inputs :							uint32_t* raw : Pointer to raw ADC value location
+ * 									float* voltage : Pointer to where voltage value is stored
+ *
+ * Outputs :						NONE
+ *
+ * Side Effects :					Data sent to external computer over UART communication
+ */
+void PrintOutput(uint32_t* raw, float* voltage)
+{
+	// Make the transmit buffer
+	char tx_buffer[100];
+
+	// Write values to buffer and Transmit, Then clear the buffer
+	sprintf(tx_buffer, "[%lu]\tADC_VALUE : %lu     Voltage : %.2fV\n\r",
+		  /* Time in Seconds for runtime*/				(HAL_GetTick() / 1000),
+		  /* ADC count value with correction factor */	(uint32_t)*raw,
+		  /* Voltage with correction factor */			*voltage);
+	HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
+}
 
 /* USER CODE END 4 */
 
