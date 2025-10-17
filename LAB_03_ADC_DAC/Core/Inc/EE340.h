@@ -14,6 +14,8 @@
 
 #include <stdint.h>
 #include "stm32l5xx_hal.h"
+
+// External Variables
 extern ADC_HandleTypeDef hadc1;
 
 // Private Macros

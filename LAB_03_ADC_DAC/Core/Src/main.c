@@ -137,21 +137,32 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
+	  // Display the vlaues to the user based on the delay macro
 	  if (HAL_GetTick() > next_poll)
 	  {
-		  // Reset timer
+		  // Reset timer :)
 		  next_poll = HAL_GetTick() + POLL_DELAY;
 
 		  // Process current ADC Value
 		  raw = processADC(&BUFFER);
 
-		  // Convert adc counts to a voltage
+		  // Convert ADC counts to a voltage and then apply correction factor
 		  float voltage = ((raw / (float)4096) * (float)3.3) * ADC_CALIBRATION_FACTOR;
 
 		  // Write values to buffer and Transmit, Then clear the buffer
-		  sprintf(tx_buffer, "ADC_VALUE : %.2f\n\r", voltage);
+		  sprintf(tx_buffer, "[%lu]\tADC_VALUE : %lu     Voltage : %.2fV\n\r",
+				  /* Time in Seconds for runtime*/							(HAL_GetTick() / 1000),
+				  /* ADC count value with correction factor */	(uint32_t)(raw * ADC_CALIBRATION_FACTOR),
+				  /* Voltage with correction factor */			voltage);
 		  HAL_UART_Transmit(&hlpuart1, (uint8_t*)tx_buffer, strlen(tx_buffer), 100);
 		  memset(tx_buffer, 0, strlen(tx_buffer));
+	  }
+
+	  // Else add new value to the buffer and update the running sum
+	  else
+	  {
+		  // Process current ADC Value
+		  processADC(&BUFFER);
 	  }
   }
   /* USER CODE END 3 */
